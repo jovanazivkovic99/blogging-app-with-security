@@ -1,0 +1,10 @@
+version: '2'
+services:
+  db:
+    image: postgres:latest
+    container_name: blogAppJovana
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
