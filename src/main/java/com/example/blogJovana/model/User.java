@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -27,9 +28,6 @@ public class User implements UserDetails {
 
     @Column(name = "email", nullable = false)
     private String email;
-
-    /*@Column(name = "username", nullable = false)
-    protected String username;*/
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -53,11 +51,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
-    /*@Column(name = "locked")
-    private Boolean locked;*/
-    /*@Column(name = "enabled")
-    private Boolean enabled;*/
-
 
     @Override
     public int hashCode() {
@@ -78,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return role == null ? Collections.emptyList() : List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -107,8 +100,8 @@ public class User implements UserDetails {
     }
 
     public enum Role {
-        USER,
-        ADMIN
+        ROLE_USER,
+        ROLE_ADMIN
     }
 }
 

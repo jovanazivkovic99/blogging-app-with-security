@@ -1,24 +1,30 @@
 package com.example.blogJovana.service.impl;
 
+import com.example.blogJovana.repository.TokenBlacklistRepository;
 import com.example.blogJovana.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
     private static final String SECRET_KEY = "72357538782F413F442A472D4B6150645367566B597033733676397924422645";
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Override
     public String extractEmail(String jwt) {
@@ -44,13 +50,18 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        if (authorities != null && !authorities.isEmpty()) {
+            claims.put("role", authorities.iterator().next().getAuthority());
+        }
+        return generateToken(claims, userDetails);
     }
 
     @Override
     public Boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractEmail(purifyToken(token));
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(purifyToken(token));
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(purifyToken(token)) && !isTokenBlacklisted(purifyToken(token));
     }
 
     @Override
@@ -86,4 +97,7 @@ public class JwtServiceImpl implements JwtService {
         return result.trim();
     }
 
+    private Boolean isTokenBlacklisted(String token) {
+        return tokenBlacklistRepository.existsByToken(token);
+    }
 }

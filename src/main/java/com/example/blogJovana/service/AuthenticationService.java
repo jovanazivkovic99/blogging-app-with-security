@@ -1,11 +1,16 @@
 package com.example.blogJovana.service;
 
-import com.example.blogJovana.request.AuthenticationRequest;
+import com.example.blogJovana.request.LoginRequest;
 import com.example.blogJovana.request.RegistrationRequest;
 import com.example.blogJovana.response.AuthenticationResponse;
+import com.example.blogJovana.response.RegistrationResponse;
 
 public interface AuthenticationService {
-    AuthenticationResponse register(RegistrationRequest request);
+    RegistrationResponse register(RegistrationRequest request);
 
-    AuthenticationResponse authenticate(AuthenticationRequest request);
+    RegistrationResponse registerAdmin(RegistrationRequest request);
+
+    AuthenticationResponse login(LoginRequest request);
+
+    void logout(String token);
 }

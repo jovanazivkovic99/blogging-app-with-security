@@ -14,4 +14,6 @@ public interface PostService {
     List<PostDetailsResponse> getAllPostsForUser(String jwtEmail);
 
     PostDetailsResponse createPost(String jwtEmail, CreatePostRequest post);
+
+    PostDetailsResponse updatePost(String jwtEmail, Long postId, CreatePostRequest post);
 }

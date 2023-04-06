@@ -1,7 +1,11 @@
 package com.example.blogJovana.service.impl;
 
+import com.example.blogJovana.exceptions.CategoryNotFoundException;
+import com.example.blogJovana.exceptions.PostNotFoundException;
+import com.example.blogJovana.exceptions.UnauthorizedActionException;
 import com.example.blogJovana.exceptions.UserNotFoundException;
 import com.example.blogJovana.mapper.PostMapper;
+import com.example.blogJovana.model.Category;
 import com.example.blogJovana.model.Post;
 import com.example.blogJovana.model.User;
 import com.example.blogJovana.repository.CategoryRepository;
@@ -11,7 +15,6 @@ import com.example.blogJovana.request.CreatePostRequest;
 import com.example.blogJovana.response.PostDetailsResponse;
 import com.example.blogJovana.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,30 +45,59 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDetailsResponse createPost(String jwtEmail, CreatePostRequest request) {
-
         User user = userRepository.findByEmail(jwtEmail).orElseThrow(
-                () -> new UserNotFoundException(HttpStatus.NOT_FOUND,
-                        "user is not found", jwtEmail)
+                () -> new UserNotFoundException(jwtEmail)
         );
-
+        Category postCategory = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
         Post post = postMapper.toPost(request);
         post.setUser(user);
+        post.setCategory(postCategory);
         Post savedPost = postRepository.save(post);
         return postMapper.toPostDetails(savedPost);
+    }
+
+    @Override
+    public PostDetailsResponse updatePost(String jwtEmail, Long postId, CreatePostRequest request) {
+        /*User user = userRepository.findByEmail(jwtEmail).orElseThrow(
+                () -> new UserNotFoundException(jwtEmail)
+        );*/
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(postId));
+        isUserPostOwner(post, jwtEmail);
+        Category postCategory = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
+        //Post post = postMapper.toPost(request);
+        //post.setUser(user);
+        post.setCategory(postCategory);
+        post.setTitle(request.title());
+        post.setContent(request.content());
+        Post updatedPost = postRepository.save(post);
+        return postMapper.toPostDetails(updatedPost);
     }
 
     @Override
     public List<PostDetailsResponse> getAllPostsForUser(String jwtEmail) {
 
         User user = userRepository.findByEmail(jwtEmail).orElseThrow(
-                () -> new UserNotFoundException(HttpStatus.NOT_FOUND,
-                        "user is not found", jwtEmail)
+                () -> new UserNotFoundException(jwtEmail)
         );
 
         List<Post> userPosts = postRepository.findByUserId(user.getId());
         return postMapper.toPostDetailsList(userPosts);
     }
 
+    private void authorize(String emailJWT, String email) {
+        if (!email.equals(emailJWT))
+            throw new UnauthorizedActionException(email);
+    }
+
+    private void isUserPostOwner(Post post, String jwtEmail) {
+        if (!post.getUser().getEmail().equals(jwtEmail)) {
+            throw new UnauthorizedActionException(jwtEmail);
+        }
+    }
     /*private void authorizeUser(String email, User property, String actionMessage) {
         User expectedOwner = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(actionMessage, "error.user.not-found", email, HttpStatus.NOT_FOUND));

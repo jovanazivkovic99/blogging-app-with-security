@@ -1,68 +1,20 @@
 package com.example.blogJovana.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
-import java.util.Date;
-
 @Getter
 @Setter
-public class ErrorResponse {
+public class ErrorResponse {/*
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private Date timestamp;
-
-    private int code;
-
-    private String status;
+    private Date timestamp;*/
 
     private String message;
+    private HttpStatus httpStatus;
 
-    private String stackTrace;
-
-    private Object data;
-
-    public ErrorResponse() {
-        timestamp = new Date();
-    }
-
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message
-    ) {
-        this();
-
-        this.code = httpStatus.value();
-        this.status = httpStatus.name();
+    public ErrorResponse(String message, HttpStatus httpStatus) {
         this.message = message;
-    }
-
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message,
-            String stackTrace
-    ) {
-        this(
-                httpStatus,
-                message
-        );
-
-        this.stackTrace = stackTrace;
-    }
-
-    public ErrorResponse(
-            HttpStatus httpStatus,
-            String message,
-            String stackTrace,
-            Object data
-    ) {
-        this(
-                httpStatus,
-                message,
-                stackTrace
-        );
-
-        this.data = data;
+        this.httpStatus = httpStatus;
     }
 }

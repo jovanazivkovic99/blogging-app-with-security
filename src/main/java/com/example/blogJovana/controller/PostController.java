@@ -30,11 +30,19 @@ public class PostController {
         return ResponseEntity.ok(postService.getAllPosts());
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<PostDetailsResponse> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
                                                           @Valid @RequestBody CreatePostRequest postRequest) {
         String emailJWT = jwtService.extractEmail(jwt);
         return ResponseEntity.ok(postService.createPost(emailJWT, postRequest));
+    }
+
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostDetailsResponse> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
+                                                          @PathVariable Long postId,
+                                                          @Valid @RequestBody CreatePostRequest postRequest) {
+        String emailJWT = jwtService.extractEmail(jwt);
+        return ResponseEntity.ok(postService.updatePost(emailJWT, postId, postRequest));
     }
 
     @GetMapping("/user")
@@ -42,8 +50,4 @@ public class PostController {
         String emailJWT = jwtService.extractEmail(jwt);
         return ResponseEntity.ok(postService.getAllPostsForUser(emailJWT));
     }
-   /* @PostMapping("/save")
-    public ResponseEntity<PostDetailsResponse> save(@RequestBody CreatePostRequest postRequest){
-        return ResponseEntity.ok(postService.save(postRequest));
-    }*/
 }
