@@ -28,7 +28,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/register-admin").permitAll()
                         //.requestMatchers("/api/v1/auth/logout").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/posts/**", "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/**", "/categories/**", "/comments/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/categories/**").hasAuthority(User.Role.ROLE_ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/categories/**").hasAuthority(User.Role.ROLE_ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAuthority(User.Role.ROLE_ADMIN.name())

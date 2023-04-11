@@ -14,6 +14,8 @@ import java.util.List;
 @Mapper(imports = {LocalDateTime.class}, componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CommentMapper {
 
+    @Mapping(target = "postId", source = "post.id")
+    @Mapping(target = "commentId", source = "id")
     CommentDetailsResponse toCommentDetailsResponse(Comment comment);
     @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
     Comment toComment(CommentDetailsRequest request);

@@ -21,36 +21,36 @@ public class CategoryController {
     private final JwtServiceImpl jwtService;
 
     @PostMapping
-    public ResponseEntity<CategoryDetailsResponse> createCategory(
+    public CategoryDetailsResponse createCategory(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
             @Valid @RequestBody CategoryDetailsRequest postRequest) {
         String emailJWT = jwtService.extractEmail(jwt);
-        return ResponseEntity.ok(categoryService.createCategory(emailJWT, postRequest));
+        return categoryService.createCategory(emailJWT, postRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDetailsResponse> updateCategory(
+    public CategoryDetailsResponse updateCategory(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
             @Valid @RequestBody CategoryDetailsRequest postRequest,
             @PathVariable("id") Long categoryId) {
         String emailJWT = jwtService.extractEmail(jwt);
-        return ResponseEntity.ok(categoryService.updateCategory(emailJWT, categoryId, postRequest));
+        return categoryService.updateCategory(emailJWT, categoryId, postRequest);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CategoryDetailsResponse> deleteCategory(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
+    public CategoryDetailsResponse deleteCategory(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,
                                                                   @PathVariable("id") Long categoryId) {
         String emailJWT = jwtService.extractEmail(jwt);
-        return ResponseEntity.ok(categoryService.deleteCategory(emailJWT, categoryId));
+        return categoryService.deleteCategory(emailJWT, categoryId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDetailsResponse> getCategory(@PathVariable("id") Long categoryId) {
-        return ResponseEntity.ok(categoryService.getCategory(categoryId));
+    public CategoryDetailsResponse getCategory(@PathVariable("id") Long categoryId) {
+        return categoryService.getCategory(categoryId);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDetailsResponse>> getCategories() {
-        return ResponseEntity.ok(categoryService.getCategories());
+    public List<CategoryDetailsResponse> getCategories() {
+        return categoryService.getCategories();
     }
 }
