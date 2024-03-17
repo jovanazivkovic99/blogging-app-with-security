@@ -35,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = userMapper.toUser(request);
 
         var savedUser = userRepository.save(user);
-        var jwt = jwtService.generateToken(savedUser);
+        jwtService.generateToken(savedUser);
         return userMapper.toRegistrationResponse(savedUser);
     }
 
