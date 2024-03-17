@@ -3,6 +3,7 @@ package com.example.blogJovana.service.impl;
 import com.example.blogJovana.exceptions.UserAlreadyExistsException;
 import com.example.blogJovana.mapper.UserMapper;
 import com.example.blogJovana.model.TokenBlacklist;
+import com.example.blogJovana.model.User;
 import com.example.blogJovana.repository.TokenBlacklistRepository;
 import com.example.blogJovana.repository.UserRepository;
 import com.example.blogJovana.request.LoginRequest;
@@ -33,6 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (isUserRegistered(request.email()))
             throw new UserAlreadyExistsException(request.email());
         var user = userMapper.toUser(request);
+        user.setRole(User.Role.ROLE_USER);
 
         var savedUser = userRepository.save(user);
         jwtService.generateToken(savedUser);
@@ -43,10 +45,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public RegistrationResponse registerAdmin(RegistrationRequest request) {
         if (isUserRegistered(request.email()))
             throw new UserAlreadyExistsException(request.email());
-        var adminUser = userMapper.toAdminUser(request);
+        var adminUser = userMapper.toUser(request);
+        adminUser.setRole(User.Role.ROLE_ADMIN);
 
         var savedAdminUser = userRepository.save(adminUser);
-        var jwt = jwtService.generateToken(savedAdminUser);
+        jwtService.generateToken(savedAdminUser);
         return userMapper.toRegistrationResponse(savedAdminUser);
     }
 

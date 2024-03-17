@@ -2,9 +2,27 @@ version: '2'
 services:
   db:
     image: postgres:latest
-    container_name: blogAppJovana
+    container_name: blog_app_db
     environment:
+      POSTGRES_DB: blog
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  blog_app:
+    container_name: blog_app
+    image: blog
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/blog
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - db
+volumes:
+  pgdata: {}
