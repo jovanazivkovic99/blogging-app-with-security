@@ -16,14 +16,8 @@ import java.time.LocalDateTime;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper {
     @Mapping(target = "password", source = "password", qualifiedBy = EncodedMapping.class)
-    @Mapping(target = "role", expression = "java(User.Role.ROLE_USER)")
     @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
     User toUser(RegistrationRequest request);
-
-    @Mapping(target = "password", source = "password", qualifiedBy = EncodedMapping.class)
-    @Mapping(target = "role", expression = "java(User.Role.ROLE_ADMIN)")
-    @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
-    User toAdminUser(RegistrationRequest request);
 
     @Mapping(target = "password", source = "password", qualifiedBy = EncodedMapping.class)
     User toUser(LoginRequest request);
